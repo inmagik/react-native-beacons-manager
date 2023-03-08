@@ -51,8 +51,8 @@ RCT_EXPORT_MODULE()
     self.locationManager.pausesLocationUpdatesAutomatically = NO;
     self.dropEmptyRanges = NO;
 
-    self.eddyStoneScanner = [[ESSBeaconScanner alloc] init];
-    self.eddyStoneScanner.delegate = self;
+    // self.eddyStoneScanner = [[ESSBeaconScanner alloc] init];
+    // self.eddyStoneScanner.delegate = self;
   }
 
   return self;
