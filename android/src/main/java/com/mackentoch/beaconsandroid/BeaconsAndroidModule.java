@@ -41,7 +41,7 @@ import org.altbeacon.beacon.Region;
 
 import java.util.Collection;
 
-public class EGBeaconModule extends ReactContextBaseJavaModule {
+public class BeaconsAndroidModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
     private final BeaconManager beaconManager;
     private BeaconTransmitter beaconTransmitter;
@@ -49,7 +49,7 @@ public class EGBeaconModule extends ReactContextBaseJavaModule {
     private boolean backgroundModeConfigured = false;
     private float[] lastAccelerometerData = new float[]{0, 0, 0};
 
-    public EGBeaconModule(ReactApplicationContext reactContext) {
+    public BeaconsAndroidModule(ReactApplicationContext reactContext) {
         this.reactContext = reactContext;
         Context appContext = reactContext.getApplicationContext();
         this.beaconManager = BeaconManager.getInstanceForApplication(appContext);
@@ -59,7 +59,7 @@ public class EGBeaconModule extends ReactContextBaseJavaModule {
     @NonNull
     @Override
     public String getName() {
-        return "EGBeacon";
+        return "BeaconsAndroidModule";
     }
 
 
@@ -67,11 +67,11 @@ public class EGBeaconModule extends ReactContextBaseJavaModule {
 
     @SuppressLint("UnspecifiedImmutableFlag")
     private void configureBackgroundMode() {
-        Log.d("EGBeacon", "Configure background mode");
+        Log.d("BeaconsAndroidModule", "Configure background mode");
         if (this.backgroundModeConfigured) {
             return;
         }
-        Log.d("EGBeacon", "Configure background mode started");
+        Log.d("BeaconsAndroidModule", "Configure background mode started");
         Context appContext = this.reactContext.getApplicationContext();
         Notification.Builder builder = new Notification.Builder(appContext);
         builder.setSmallIcon(R.mipmap.ic_launcher);
@@ -108,43 +108,43 @@ public class EGBeaconModule extends ReactContextBaseJavaModule {
         beaconManager.setBackgroundBetweenScanPeriod(0);
         beaconManager.setBackgroundScanPeriod(1100);
         this.backgroundModeConfigured = true;
-        Log.d("EGBeacon", "Configure background mode completed");
+        Log.d("BeaconsAndroidModule", "Configure background mode completed");
     }
 
     @ReactMethod
     public void addBeaconLayout(String layout) {
-        Log.d("EGBeacon", "Add layout " + layout);
+        Log.d("BeaconsAndroidModule", "Add layout " + layout);
         this.beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(layout));
     }
 
     @ReactMethod
     public void startRanging(String regionId, String uuid) {
-        Log.d("EGBeacon", "Request ranging on UUID " + uuid);
+        Log.d("BeaconsAndroidModule", "Request ranging on UUID " + uuid);
         this.configureBackgroundMode();
         beaconManager.startRangingBeacons(new Region(regionId, Identifier.parse(uuid), null, null));
     }
 
     @ReactMethod
     public void stopRanging(String regionId, String uuid, Promise promise) {
-        Log.d("EGBeacon", "Stopping ranging on UUID " + uuid);
+        Log.d("BeaconsAndroidModule", "Stopping ranging on UUID " + uuid);
         try {
             this.beaconManager.stopRangingBeacons(new Region(regionId, Identifier.parse(uuid), null, null));
             promise.resolve("Ok");
         } catch (Exception e) {
-            Log.e("EGBeacon", "stopRanging, error: ", e);
+            Log.e("BeaconsAndroidModule", "stopRanging, error: ", e);
             promise.reject(e);
         }
     }
 
     private final RangeNotifier rangeNotifier = (beacons, region) -> {
-        Log.d("EGBeacon", "Beacons ranged");
+        Log.d("BeaconsAndroidModule", "Beacons ranged");
         sendEvent("beaconsDidRange", createRangingResponse(beacons, region));
     };
 
     private final SensorEventListener accelerometerListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            Log.d("EGBeacon", "Received accelerometer data");
+            Log.d("BeaconsAndroidModule", "Received accelerometer data");
             lastAccelerometerData = sensorEvent.values;
         }
 
@@ -155,7 +155,7 @@ public class EGBeaconModule extends ReactContextBaseJavaModule {
     };
 
     private void sendEvent(String eventName, @Nullable WritableMap params) {
-        Log.d("EGBeacon", "Sending event");
+        Log.d("BeaconsAndroidModule", "Sending event");
         reactContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
@@ -209,7 +209,7 @@ public class EGBeaconModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void addListener(String eventName) {
         // Set up any upstream listeners or background tasks as necessary
-        Log.d("EGBeacon", "Add listener for " + eventName);
+        Log.d("BeaconsAndroidModule", "Add listener for " + eventName);
         beaconManager.addRangeNotifier(this.rangeNotifier);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(accelerometerListener, sensor, 1 * 1000 * 1000);
@@ -218,7 +218,7 @@ public class EGBeaconModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void removeListeners(Integer count) {
         // Remove upstream listeners, stop unnecessary background tasks
-        Log.d("EGBeacon", "Removed " + count.toString() + " listeners");
+        Log.d("BeaconsAndroidModule", "Removed " + count.toString() + " listeners");
         beaconManager.removeRangeNotifier(this.rangeNotifier);
         sensorManager.unregisterListener(accelerometerListener);
     }

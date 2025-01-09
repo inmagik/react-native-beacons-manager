@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class EGBeaconPackage implements ReactPackage {
+public class BeaconsAndroidPackage implements ReactPackage {
     @NonNull
     @Override
     public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new EGBeaconModule(reactContext));
+        modules.add(new BeaconsAndroidModule(reactContext));
 
         return modules;
     }
